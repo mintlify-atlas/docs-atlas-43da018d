@@ -1,0 +1,95 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "Better PM",
+  "projectDescription": "A smarter CLI for package manager operations, especially in monorepos",
+  "theme": "aspen",
+  "primaryColor": "#10b981",
+  "lightColor": "#34d399",
+  "darkColor": "#059669",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/monorepo-aware-install",
+              "concepts/package-manager-agnostic",
+              "concepts/workspace-navigation"
+            ]
+          },
+          {
+            "group": "Commands",
+            "pages": [
+              "commands/install",
+              "commands/add",
+              "commands/remove",
+              "commands/run",
+              "commands/pls",
+              "commands/cd",
+              "commands/ls",
+              "commands/up",
+              "commands/link",
+              "commands/unlink",
+              "commands/why",
+              "commands/x",
+              "commands/activate"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/monorepo-setup",
+              "guides/shell-integration",
+              "guides/paste-friendly-commands",
+              "guides/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/changelog",
+              "reference/contributing"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Package manager agnostic (works with pnpm, bun, and npm)",
+    "Monorepo-aware installs with automatic scoping",
+    "Workspace package navigation with shell integration",
+    "Paste-friendly command parsing",
+    "Native binary with fast shell completions"
+  ],
+  "publicApiSurface": [
+    "pm i - Install dependencies",
+    "pm add - Add packages",
+    "pm remove - Remove packages",
+    "pm run - Run package scripts",
+    "pm pls - List workspace packages",
+    "pm cd - Navigate to workspace packages",
+    "pm ls - Proxy to package manager ls",
+    "pm up/update - Update dependencies",
+    "pm link - Link packages",
+    "pm unlink - Unlink packages",
+    "pm why - Show dependency reasons",
+    "pm x - Execute packages",
+    "pm activate - Setup shell integration"
+  ]
+}
