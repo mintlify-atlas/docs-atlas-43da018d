@@ -1,80 +1,331 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get started with Better PM in minutes
 ---
 
-## Get started in three steps
+# Quickstart
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+This guide walks you through the most common Better PM workflows. After completing it, you'll understand how to install dependencies, add packages, and navigate your monorepo efficiently.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  Make sure you've completed the [installation](/installation) and set up shell integration before continuing.
 </Note>
+
+## Your First Commands
+
+Let's start with the basics in any project with a lockfile.
+
+### Install Dependencies
+
+Better PM automatically detects your package manager and runs the appropriate install command.
+
+```bash
+pm i
+```
+
+This is equivalent to:
+- `pnpm install` if you have `pnpm-lock.yaml`
+- `bun install` if you have `bun.lockb`
+- `npm install` if you have `package-lock.json`
+
+<Info>
+  Both `pm i` and `pm install` work — use whichever you prefer.
+</Info>
+
+### Add a Dependency
+
+Add a package to your project:
+
+```bash
+pm add lodash
+```
+
+Add a dev dependency with the `-D` flag:
+
+```bash
+pm add -D typescript
+```
+
+<Tip>
+  **Paste-friendly**: You can paste install commands directly:
+  
+  ```bash
+  pm add "npm install -D prettier"
+  ```
+  
+  Better PM extracts `prettier` and the `-D` flag automatically, then uses your project's actual package manager.
+</Tip>
+
+### Remove a Dependency
+
+Remove a package:
+
+```bash
+pm remove lodash
+```
+
+## Monorepo Workflows
+
+Better PM shines in monorepo environments. Let's explore the key features.
+
+### List Workspace Packages
+
+View all packages in your monorepo as a tree:
+
+```bash
+pm pls
+```
+
+Example output:
+
+```
+packages/
+│   ├── core "@myapp/core"
+│   └── utils "@myapp/utils"
+apps/
+    └── web "@myapp/web"
+```
+
+<Note>
+  The command is `pm pls` (package list) to distinguish it from `pm ls`, which is a proxy for your package manager's `ls` command (e.g., `pnpm ls` for listing installed dependencies).
+</Note>
+
+### Navigate to a Package
+
+Jump to any workspace package:
+
+```bash
+pm cd @myapp/web
+```
+
+Return to the monorepo root:
+
+```bash
+pm cd
+```
+
+<Info>
+  Tab completion works for package names! Type `pm cd @my` and press Tab to see suggestions.
+</Info>
+
+### Scoped Installs
+
+When you're inside a workspace package, `pm i` automatically installs only that package:
+
+```bash
+cd apps/web
+pm i              # Installs only @myapp/web and its dependencies
+```
+
+Behind the scenes, Better PM runs:
+- `pnpm install --filter "@myapp/web..."` (pnpm)
+- `bun install --filter "@myapp/web"` (bun)
+- `npm install --workspace @myapp/web` (npm)
+
+To install a specific package from anywhere:
+
+```bash
+pm i -F @myapp/web
+```
+
+Install multiple packages:
+
+```bash
+pm i -F @myapp/web -F @myapp/api
+```
+
+### Root Install Safety
+
+At the monorepo root, `pm i` shows a warning before installing everything:
+
+```bash
+cd /path/to/monorepo
+pm i
+```
+
+Output:
+
+```
+[WARNING] You are at the monorepo root. This will install ALL packages.
+
+Workspace packages:
+packages/
+│   ├── core "@myapp/core"
+│   └── utils "@myapp/utils"
+apps/
+    └── web "@myapp/web"
+
+Proceed with installing all packages? (y/N)
+```
+
+To skip the prompt (useful in CI):
+
+```bash
+pm i --sure    # or -y
+```
+
+## Additional Commands
+
+Better PM includes several proxy commands that pass through to your package manager.
+
+### Run Scripts
+
+Run a package.json script:
+
+```bash
+pm run dev
+pm run build
+pm run test
+```
+
+<Tip>
+  **Automatic passthrough**: Unknown commands automatically run as scripts:
+  
+  ```bash
+  pm dev      # Equivalent to 'pm run dev'
+  pm build    # Equivalent to 'pm run build'
+  ```
+  
+  This was added in version 0.3.3.
+</Tip>
+
+### Execute Packages
+
+Run a package with npx/pnpx/bunx:
+
+```bash
+pm x prettier --check .    # Uses pnpx, bunx, or npx
+```
+
+### Update Dependencies
+
+Update packages interactively:
+
+```bash
+pm up -i              # Interactive update
+pm up --latest        # Update to latest versions
+```
+
+### Check Dependency Usage
+
+See why a package is installed (pnpm/bun only):
+
+```bash
+pm why react
+```
+
+### Other Proxy Commands
+
+These commands work exactly like their package manager equivalents:
+
+- `pm ls` — List installed dependencies (not workspace packages)
+- `pm link` — Link a package
+- `pm unlink` — Unlink a package
+
+## Example Workflow
+
+Here's a complete workflow for working on a feature in a monorepo:
+
+<Steps>
+  <Step title="Navigate to your workspace">
+    ```bash
+    pm cd @myapp/web
+    ```
+  </Step>
+
+  <Step title="Add a new dependency">
+    ```bash
+    pm add react-query
+    ```
+  </Step>
+
+  <Step title="Install updated dependencies">
+    ```bash
+    pm i
+    ```
+    
+    This installs only `@myapp/web` and its dependencies.
+  </Step>
+
+  <Step title="Run the dev server">
+    ```bash
+    pm dev
+    ```
+    
+    Automatically runs the `dev` script from package.json.
+  </Step>
+
+  <Step title="Add a dev tool">
+    ```bash
+    pm add -D vitest
+    ```
+  </Step>
+
+  <Step title="Go back to the root">
+    ```bash
+    pm cd
+    ```
+  </Step>
+</Steps>
+
+## Common Patterns
+
+### Install All Packages in CI
+
+```bash
+pm i -y    # Skips the confirmation prompt
+```
+
+### Add the Same Dependency to Multiple Packages
+
+```bash
+cd packages/core
+pm add zod
+
+cd ../utils
+pm add zod
+```
+
+Or from the root with filters:
+
+```bash
+pm i -F @myapp/core -F @myapp/utils
+```
+
+### Clean Install a Specific Package
+
+```bash
+rm -rf node_modules
+pm i -F @myapp/web
+```
+
+## Next Steps
+
+You now know the core Better PM commands! Here are some resources to explore:
+
+<CardGroup cols={2}>
+  <Card title="Commands Reference" icon="terminal" href="/commands/install">
+    Detailed documentation for every command
+  </Card>
+  <Card title="Monorepo Guide" icon="folder-tree" href="/guides/monorepo-setup">
+    Advanced monorepo workflows and best practices
+  </Card>
+  <Card title="Shell Integration" icon="terminal" href="/guides/shell-integration">
+    Set up shell completions and navigation
+  </Card>
+  <Card title="GitHub" icon="github" href="https://github.com/fdarian/better-pm">
+    View source code and contribute
+  </Card>
+</CardGroup>
+
+## Getting Help
+
+View help for any command:
+
+```bash
+pm --help
+pm i --help
+pm add --help
+```
+
+For more assistance, open an issue on [GitHub](https://github.com/fdarian/better-pm/issues).

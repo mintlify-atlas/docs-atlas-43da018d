@@ -1,0 +1,136 @@
+---
+title: 'pm pls'
+description: 'List workspace packages as a tree'
+icon: 'list-tree'
+---
+
+## Overview
+
+The `pm pls` command lists all workspace packages in your monorepo as a formatted tree structure, making it easy to see the organization of your project.
+
+## Syntax
+
+```bash
+pm pls
+```
+
+<Note>
+  This command has no options or arguments. It simply displays all workspace packages.
+</Note>
+
+## Examples
+
+### List All Packages
+
+```bash
+pm pls
+```
+
+```bash Output
+├── packages/
+│   ├── core "@myapp/core"
+│   ├── utils "@myapp/utils"
+│   └── shared "@myapp/shared"
+└── apps/
+    ├── web "@myapp/web"
+    └── api "@myapp/api"
+```
+
+### View Package Structure
+
+```bash
+pm pls
+```
+
+```bash Output
+├── libs/
+│   ├── auth "@company/auth"
+│   ├── database "@company/database"
+│   └── ui "@company/ui"
+├── services/
+│   ├── api "@company/api"
+│   └── worker "@company/worker"
+└── apps/
+    └── dashboard "@company/dashboard"
+```
+
+## How It Works
+
+From `src/commands/pls.ts:8-16`:
+```typescript
+export const plsCmd = cli.Command.make('pls', {}, () =>
+  Effect.gen(function* () {
+    const pm = yield* PackageManagerService;
+    const path = yield* Path.Path;
+    const packages = yield* pm.listWorkspacePackages(pm.lockDir);
+    for (const line of formatWorkspaceTree(packages, path.sep)) {
+      yield* Console.log(line);
+    }
+  }).pipe(Effect.provide(PackageManagerLayer)),
+);
+```
+
+The command:
+1. Detects the package manager
+2. Lists all workspace packages from the lockfile directory
+3. Formats them into a tree structure using `formatWorkspaceTree`
+4. Displays the formatted output
+
+## Tree Format
+
+The output shows:
+- **Directory structure** - Nested folders with proper tree characters (`├──`, `└──`, `│`)
+- **Package names** - Displayed in quotes after the directory name
+- **Relative paths** - Shows where each package lives in your monorepo
+
+## Use Cases
+
+### Quick Overview
+
+See all packages in your monorepo at a glance:
+
+```bash
+pm pls
+```
+
+### Before Installation
+
+Check package names before using `pm i -F`:
+
+```bash
+pm pls
+pm i -F @myapp/core
+```
+
+### Documentation
+
+Generate a visual representation of your monorepo structure:
+
+```bash
+pm pls > docs/structure.txt
+```
+
+### Onboarding
+
+Help new team members understand the project layout:
+
+```bash
+pm pls
+```
+
+## Monorepo Detection
+
+The command works with:
+- **pnpm workspaces** - Reads from `pnpm-workspace.yaml`
+- **Bun workspaces** - Reads from `package.json` workspaces field
+- **npm workspaces** - Reads from `package.json` workspaces field
+
+<Info>
+  If run in a non-monorepo project, `pm pls` will show an empty tree or no packages.
+</Info>
+
+## Related Commands
+
+- [pm cd](/commands/cd) - Navigate to a workspace package
+- [pm install](/commands/install) - Install with workspace filtering
+- [pm ls](/commands/ls) - List installed dependencies
